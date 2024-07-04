@@ -23,7 +23,10 @@ class CustomUserManager(BaseUserManager):
 # Define a base user model
 class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, blank=True, null=True)
+    username = models.CharField(max_length=150, blank=True, null=True, unique=True)
+
+    nombre = models.CharField(max_length=150, blank=True, null=True)
+
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -34,12 +37,13 @@ class User(AbstractBaseUser):
     genero = models.CharField(max_length=20, blank=True, null=True, choices=[('F', 'Femenino'), ('M', 'Masculino'), ('B', 'No binario'), ("O", "Otro")])
     fecha_nacimiento = models.DateField()    
     descripcion = models.TextField(blank=True)
+    imagen = models.ImageField(upload_to='perfiles/', default='perfiles/default_profile.jpg')
 
     activo = models.BooleanField(default=True)
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'username'
     # Add additional fields as needed, such as first_name, last_name, etc.
     # Define any additional methods or properties specific to the base user model
 

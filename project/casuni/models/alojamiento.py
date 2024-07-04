@@ -7,9 +7,9 @@ class Alojamiento(models.Model):
     direccion = models.CharField(max_length=255)
     descripcion = models.TextField()
     precio = models.FloatField()
-    servicios = models.TextField()
+    servicios = models.ManyToManyField('Servicio', related_name='alojamientos')
     fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
+    fecha_fin = models.DateField(null=True, blank=True)
     fecha_publicacion = models.DateField(auto_now_add=True)
     
     propietario = models.ForeignKey(Propietario, related_name="propiedades", on_delete=models.CASCADE)
