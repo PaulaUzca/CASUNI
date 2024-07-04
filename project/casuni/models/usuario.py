@@ -1,71 +1,37 @@
-# Assuming you have already created a Django project and app
-
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import User
+from django.conf import settings
 
-# Define a custom manager for the user model
-class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        return self.create_user(email, password, **extra_fields)
-
-# Define a base user model
-class User(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, blank=True, null=True, unique=True)
-
-    nombre = models.CharField(max_length=150, blank=True, null=True)
-
-    date_joined = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+# Extend the base user model for specific roles (e.g., Student and Proprietor)
+class Estudiante(models.Model):
 
     telefono = models.CharField(max_length=20, blank=True, null=True)
     identificacion = models.CharField(max_length=20, blank=True, null=True)
-    direccion = models.TextField()
+    direccion = models.CharField(max_length=250, blank=True)
     genero = models.CharField(max_length=20, blank=True, null=True, choices=[('F', 'Femenino'), ('M', 'Masculino'), ('B', 'No binario'), ("O", "Otro")])
-    fecha_nacimiento = models.DateField()    
+    fecha_nacimiento = models.DateField(blank=True, null=True)    
     descripcion = models.TextField(blank=True)
     imagen = models.ImageField(upload_to='perfiles/', default='perfiles/default_profile.jpg')
-
-    activo = models.BooleanField(default=True)
-
-    objects = CustomUserManager()
-
-    USERNAME_FIELD = 'username'
-    # Add additional fields as needed, such as first_name, last_name, etc.
-    # Define any additional methods or properties specific to the base user model
-
-    class Meta:
-        verbose_name = 'user'
-        verbose_name_plural = 'users'
-
-    def __str__(self):
-        return self.email
-
-# Extend the base user model for specific roles (e.g., Student and Proprietor)
-class Estudiante(User):
-    # Add additional fields specific to students
     universidad = models.TextField()
 
-    class Meta:
-        verbose_name = 'estudiante'
-        verbose_name_plural = 'estudiantes'
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="estudiante")
 
-class Propietario(User):
-    # Add additional fields specific to proprietors
+    def __str__(self):
+        return self.user.username
 
-    class Meta:
-        verbose_name = 'propietario'
-        verbose_name_plural = 'propietarios'
+class Propietario(models.Model):
+
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    identificacion = models.CharField(max_length=20, blank=True, null=True)
+    direccion = models.CharField(max_length=250, blank=True)
+    genero = models.CharField(max_length=20, blank=True, null=True, choices=[('F', 'Femenino'), ('M', 'Masculino'), ('B', 'No binario'), ("O", "Otro")])
+    fecha_nacimiento = models.DateField(blank=True, null=True)    
+    descripcion = models.TextField(blank=True)
+    imagen = models.ImageField(upload_to='perfiles/', default='perfiles/default_profile.jpg')
+    
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="propietario")
+
+    def __str__(self):
+        return self.user.username

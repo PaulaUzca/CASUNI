@@ -1,4 +1,3 @@
-from .usuario import User
 from .usuario import Propietario
 from .usuario import Estudiante
 from .notificacion import Notificacion

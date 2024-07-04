@@ -1,15 +1,10 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from .forms import LoginForm  # Assuming you'll create a login form
-
-
-
+from django.shortcuts import render, redirect
+from .forms import LoginForm  # Ensure you have imported your updated LoginForm
 
 def home(request):
-    print("home page")
-
-
+    print("home")
 
 def login_view(request):
     if request.method == 'POST':
@@ -21,14 +16,9 @@ def login_view(request):
             print(user)
             if user is not None:
                 login(request, user)
-                return redirect('')  
+                return redirect('/')  # Update with your desired redirect URL
             else:
                 messages.error(request, 'Invalid credentials. Please try again.')
     else:
         form = LoginForm()
     return render(request, 'login.html', {'form': form})
-
-def logout_view(request):
-    logout(request)
-    return redirect('login')  # Redirect to login page after logout
-
