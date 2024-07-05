@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Propietario</title>
+</head>
+<body>
+    <h2>Perfil de {{ propietario.user.username }}</h2>
+    <img src="{{ propietario.imagen.url }}" alt="Foto de perfil">
+
+    <p>Telefono: {{ propietario.telefono }}</p>
+    <p>Dirección: {{ propietario.direccion }}</p>
+    <p>Género: {{ propietario.get_genero_display }}</p>
+    <p>Fecha de Nacimiento: {{ propietario.fecha_nacimiento }}</p>
+    <p>Descripción: {{ propietario.descripcion }}</p>
+
+    <h3>Sus Propiedades (Alojamientos):</h3>
+    {% if alojamientos %}
+        <ul>
+            {% for alojamiento in alojamientos %}
+                <li>
+                    <a>{{ alojamiento.nombre }}</a>
+                    <a href="{% url 'alojamiento_detalle' alojamiento.id %}">Ver alojamiento</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No tienes alojamientos registrados.</p>
+    {% endif %}
+</body>
+</html>

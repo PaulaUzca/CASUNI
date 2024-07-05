@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de Estudiante</title>
+</head>
+<body>
+    <h2>Perfil de {{ estudiante.user.username }}</h2>
+    <img src="{{ estudiante.imagen.url }}" alt="Foto de perfil">
+
+    <p>Telefono: {{ estudiante.telefono }}</p>
+    <p>Dirección: {{ estudiante.direccion }}</p>
+    <p>Género: {{ estudiante.get_genero_display }}</p>
+    <p>Fecha de Nacimiento: {{ estudiante.fecha_nacimiento }}</p>
+    <p>Descripción: {{ estudiante.descripcion }}</p>
+    <p>Universidad: {{ estudiante.universidad }}</p>
+</body>
+</html>
