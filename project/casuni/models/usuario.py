@@ -16,7 +16,7 @@ class Estudiante(models.Model):
     universidad = models.TextField()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="estudiante")
-
+    
     def __str__(self):
         return self.user.username
 
