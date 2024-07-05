@@ -1,0 +1,35 @@
+<!-- alojamiento_detalle.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ alojamiento.nombre }}</title>
+</head>
+<body>
+    <h2>{{ alojamiento.nombre }}</h2>
+    <p><strong>Dirección:</strong> {{ alojamiento.direccion }}</p>
+    <p><strong>Descripción:</strong> {{ alojamiento.descripcion }}</p>
+    <p><strong>Precio:</strong> {{ alojamiento.precio }}</p>
+    <p><strong>Fecha en la que se encuentra disponible:</strong> {{ alojamiento.fecha_inicio }}</p>
+    {% if alojamiento.fecha_fin %}
+        <p><strong>Disponible hasta:</strong> {{ alojamiento.fecha_fin }}</p>
+    {% else %}
+        <p><strong>No tiene fecha de baja!</strong></p>
+    {% endif %}
+    
+    <h3>Servicios:</h3>
+    <ul>
+        {% for servicio in alojamiento.servicios.all %}
+            <li>{{ servicio.nombre }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h3>Fotos:</h3>
+    {% for foto in alojamiento.fotos.all %}
+        <img src="{{ foto.imagen.url }}" alt="{{ foto.descripcion }}">
+        {% if foto.descripcion %}
+            <p>{{ foto.descripcion }}</p>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>

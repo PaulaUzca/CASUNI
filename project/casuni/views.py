@@ -1,9 +1,9 @@
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from .forms import LoginForm  # Ensure you have imported your updated LoginForm
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from .models import Alojamiento
 
 def home(request):
     print("home")
@@ -22,7 +22,7 @@ def login_view(request):
                 elif user.propietario.exists():
                     return redirect('propietario_home')  # Redirige a la página de propietario
                 else:
-                    return redirect('/') 
+                    messages.error(request, 'Contraseña incorrecta.')
             else:
                 messages.error(request, 'Credenciales inválidas. Inténtelo de nuevo.')
     else:
@@ -46,3 +46,7 @@ def estudiante_home(request):
 def propietario_home(request):
     nombre_usuario = request.user.username
     return render(request, 'propietario_home.html', {'nombre_usuario': nombre_usuario})
+
+def alojamiento_detalle(request, alojamiento_id):
+    alojamiento = get_object_or_404(Alojamiento, pk=alojamiento_id)
+    return render(request, 'alojamiento_detalle.html', {'alojamiento': alojamiento})
