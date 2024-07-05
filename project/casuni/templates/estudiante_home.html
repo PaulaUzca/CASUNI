@@ -43,6 +43,7 @@
             <h1>Bienvenido {{ nombre_usuario }}</h1>
         </div>
         <p>¡Gracias por iniciar sesión como estudiante!</p>
+        <a href="{% url 'estudiante_perfil' estudiante_id %}">Ver mi perfil</a>
     </div>
 </body>
 </html>
