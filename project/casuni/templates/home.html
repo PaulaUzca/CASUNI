@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% load static %}
+
+
+{% block head%}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block body%}
+<div class="container">
+    <div class="row ng-scope">
+        <div class="col-md-9 col-md-pull-3">
+            {% for alojamiento in alojamientos %}
+            <div class="container-fluid card-alojamiento">
+                <div class="row">
+                    <div class="col-md-4">
+                        {% if alojamiento.fotos.all %}
+                        <img src="{{alojamiento.fotos.first.imagen.url}}" class="card-img" alt="...">
+                        {% else %}
+                        <img src="{% static 'placeholder.jpg' %}" class="card-img" alt="Placeholder">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>
+                                    {{alojamiento.direccion}}
+                                </p>
+                                <h4>
+                                    <a href="{% url 'alojamiento_detalle' alojamiento.id %}">
+                                    {{alojamiento.nombre}}
+                                    </a>
+                                </h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                {% for servicio in alojamiento.servicios.all %}
+                                {{ servicio.nombre }} ·
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="text-left">
+                                    Calificacion  ⭐ (X Reviews)
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="text-right">
+                                    $ {{alojamiento.precio}}/mensual
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock%}

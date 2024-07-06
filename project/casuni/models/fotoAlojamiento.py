@@ -3,7 +3,7 @@ from .alojamiento import Alojamiento
 
 class FotoAlojamiento(models.Model):
     alojamiento = models.ForeignKey(Alojamiento, on_delete=models.CASCADE, related_name='fotos')
-    imagen = models.ImageField(upload_to='alojamientos/')
+    imagen = models.ImageField(upload_to='media/alojamientos/')
     descripcion = models.TextField(blank=True, null=True)
 
     def __str__(self):

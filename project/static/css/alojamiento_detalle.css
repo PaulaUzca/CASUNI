@@ -1,0 +1,38 @@
+body {
+    background-color: #eee
+}
+
+.carousel-inner img {
+    width: 100%
+}
+
+.carousel-item img {
+    object-fit: contain;
+    height: 400px !important
+}
+
+#myCarousel .carousel-indicators {
+    position: static;
+    margin-top: 0px
+}
+
+#myCarousel .carousel-indicators>li {
+    width: 100px
+}
+
+#myCarousel .carousel-indicators li img {
+    display: block;
+    opacity: 0.5
+}
+
+#myCarousel .carousel-indicators li.active img {
+    opacity: 1
+}
+
+#myCarousel .carousel-indicators li:hover img {
+    opacity: 0.75
+}
+
+.alojamiento-view{
+    padding: 40px 10%;
+}

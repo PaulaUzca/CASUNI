@@ -12,7 +12,7 @@ class Estudiante(models.Model):
     genero = models.CharField(max_length=20, blank=True, null=True, choices=[('F', 'Femenino'), ('M', 'Masculino'), ('B', 'No binario'), ("O", "Otro")])
     fecha_nacimiento = models.DateField(blank=True, null=True)    
     descripcion = models.TextField(blank=True)
-    imagen = models.ImageField(upload_to='perfiles/', default='perfiles/default_profile.jpg')
+    imagen = models.ImageField(upload_to='media/perfiles/', default='media/perfiles/default_profile.jpg')
     universidad = models.TextField()
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="estudiante")
@@ -28,7 +28,7 @@ class Propietario(models.Model):
     genero = models.CharField(max_length=20, blank=True, null=True, choices=[('F', 'Femenino'), ('M', 'Masculino'), ('B', 'No binario'), ("O", "Otro")])
     fecha_nacimiento = models.DateField(blank=True, null=True)    
     descripcion = models.TextField(blank=True)
-    imagen = models.ImageField(upload_to='perfiles/', default='perfiles/default_profile.jpg')
+    imagen = models.ImageField(upload_to='media/perfiles/', default='media/perfiles/default_profile.jpg')
     
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="propietario")

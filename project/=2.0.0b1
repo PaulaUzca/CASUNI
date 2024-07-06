@@ -1,0 +1,11 @@
+Collecting django-viewflow
+  Downloading django_viewflow-2.1.2-py3-none-any.whl (15.6 MB)
+Collecting django-filter>=2.3.0
+  Downloading django_filter-24.2-py3-none-any.whl (94 kB)
+Requirement already satisfied: Django>=4.2 in d:\uis septimo semestre\ingenieria de software\casuni_project\venv\lib\site-packages (from django-viewflow) (4.2.13)
+Requirement already satisfied: sqlparse>=0.3.1 in d:\uis septimo semestre\ingenieria de software\casuni_project\venv\lib\site-packages (from Django>=4.2->django-viewflow) (0.5.0)
+Requirement already satisfied: asgiref<4,>=3.6.0 in d:\uis septimo semestre\ingenieria de software\casuni_project\venv\lib\site-packages (from Django>=4.2->django-viewflow) (3.8.1)
+Requirement already satisfied: tzdata in d:\uis septimo semestre\ingenieria de software\casuni_project\venv\lib\site-packages (from Django>=4.2->django-viewflow) (2024.1)
+Requirement already satisfied: typing-extensions>=4 in d:\uis septimo semestre\ingenieria de software\casuni_project\venv\lib\site-packages (from asgiref<4,>=3.6.0->Django>=4.2->django-viewflow) (4.12.2)
+Installing collected packages: django-filter, django-viewflow
+Successfully installed django-filter-24.2 django-viewflow-2.1.2

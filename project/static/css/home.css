@@ -1,0 +1,210 @@
+body{margin-top:20px;
+    background-color: #eee;
+    }
+
+
+    .card-alojamiento{
+        box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+        margin: 5px;
+    }
+
+
+
+    .div {
+      align-self: stretch;
+      max-width: 760px;
+    }
+    .div-2 {
+      gap: 20px;
+      display: flex;
+    }
+    @media (max-width: 991px) {
+      .div-2 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0px;
+      }
+    }
+    .column {
+      display: flex;
+      flex-direction: column;
+      line-height: normal;
+      width: 41%;
+      margin-left: 0px;
+    }
+    @media (max-width: 991px) {
+      .column {
+        width: 100%;
+      }
+    }
+    .div-3 {
+      justify-content: center;
+      border-radius: 12px;
+      border-color: rgba(229, 231, 235, 1);
+      border-style: solid;
+      border-width: 1px;
+      display: flex;
+      flex-grow: 1;
+      flex-direction: column;
+    }
+    @media (max-width: 991px) {
+      .div-3 {
+        margin-top: 24px;
+      }
+    }
+    .img {
+      aspect-ratio: 1.49;
+      object-fit: auto;
+      object-position: center;
+      width: 100%;
+    }
+    .column-2 {
+      display: flex;
+      flex-direction: column;
+      line-height: normal;
+      width: 59%;
+      margin-left: 20px;
+    }
+    @media (max-width: 991px) {
+      .column-2 {
+        width: 100%;
+      }
+    }
+    .div-4 {
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px;
+    }
+    @media (max-width: 991px) {
+      .div-4 {
+        max-width: 100%;
+        margin-top: 24px;
+      }
+    }
+    .div-5 {
+      display: flex;
+      gap: 20px;
+    }
+    @media (max-width: 991px) {
+      .div-5 {
+        flex-wrap: wrap;
+      }
+    }
+    .div-6 {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .div-7 {
+      color: var(--gray-500, #6b7280);
+      font: 400 14px/143% Inter, sans-serif;
+    }
+    .div-8 {
+      color: var(--gray-700, #374151);
+      font: 500 20px/160% Inter, sans-serif;
+    }
+    .img-2 {
+      aspect-ratio: 1;
+      object-fit: auto;
+      object-position: center;
+      width: 32px;
+      align-self: start;
+    }
+    .div-9 {
+      border-color: rgba(229, 231, 235, 1);
+      border-style: solid;
+      border-width: 1px;
+      background-color: #e5e7eb;
+      margin-top: 15px;
+      height: 1px;
+    }
+    @media (max-width: 991px) {
+      .div-9 {
+        max-width: 100%;
+      }
+    }
+    .div-10 {
+      color: var(--gray-500, #6b7280);
+      margin-top: 16px;
+      font: 400 14px/143% Inter, sans-serif;
+    }
+    @media (max-width: 991px) {
+      .div-10 {
+        max-width: 100%;
+      }
+    }
+    .div-11 {
+      color: var(--gray-500, #6b7280);
+      font: 400 14px/143% Inter, sans-serif;
+    }
+    @media (max-width: 991px) {
+      .div-11 {
+        max-width: 100%;
+      }
+    }
+    .div-12 {
+      border-color: rgba(229, 231, 235, 1);
+      border-style: solid;
+      border-width: 1px;
+      background-color: #e5e7eb;
+      margin-top: 15px;
+      height: 1px;
+    }
+    @media (max-width: 991px) {
+      .div-12 {
+        max-width: 100%;
+      }
+    }
+    .div-13 {
+      justify-content: end;
+      display: flex;
+      margin-top: 16px;
+      gap: 16px;
+      color: var(--gray-700, #374151);
+    }
+    @media (max-width: 991px) {
+      .div-13 {
+        flex-wrap: wrap;
+      }
+    }
+    .div-14 {
+      align-self: start;
+      display: flex;
+      margin-top: 8px;
+      gap: 4px;
+      font-size: 14px;
+      line-height: 143%;
+      flex: 1;
+    }
+    .div-15 {
+      font-family: Inter, sans-serif;
+      font-weight: 500;
+    }
+    .img-3 {
+      aspect-ratio: 1;
+      object-fit: auto;
+      object-position: center;
+      width: 20px;
+    }
+    .div-16 {
+      font-family: Inter, sans-serif;
+      font-weight: 400;
+    }
+    .div-17 {
+      justify-content: end;
+      display: flex;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    @media (max-width: 991px) {
+      .div-17 {
+        white-space: initial;
+      }
+    }
+    .div-18 {
+      font: 500 18px/156% Inter, sans-serif;
+    }
+    .div-19 {
+      margin: auto 0;
+      font: 400 14px/143% Inter, sans-serif;
+    }

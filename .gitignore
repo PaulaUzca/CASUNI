@@ -2,9 +2,14 @@
 
 staticfiles/*
 
+project/staticfiles/
+
+node_modules/*
+
+/node_modules
+
 TODO
 /images
-/css
 venv
 .env
 pyvenv.cfg
@@ -22,7 +27,10 @@ media
 
 *.jpg
 *.png
-*.css
+*.jpeg
+*.webp
+
+
 
 # Backup files # 
 *.bak 

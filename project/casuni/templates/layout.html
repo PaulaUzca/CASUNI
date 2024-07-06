@@ -1,0 +1,120 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+
+<!-- Include Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<!-- Include Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+{% block head%}
+
+{% endblock %}
+
+<style>
+    body{
+        margin-top: 0px;
+    }
+
+    .navbar {
+        position: relative;
+    }
+    .navbar-light .navbar-nav .nav-link {
+        color: #000;
+    }
+    .navbar-brand {
+        margin-right: auto;
+    }
+    .navbar-nav {
+        margin-left: auto;
+    }
+</style>
+
+
+
+{% block title%}
+
+{% endblock %}
+
+</head>
+
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top bg-light navbar-light">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img
+                id="MDB-logo"
+                src="{% static 'icons/casuni_titulo.svg' %}"
+                alt="MDB Logo"
+                draggable="false"
+                height="30"
+            />
+        </a>
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+        >
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        {% if request.user.estudiante %}
+                        <p class="nav-link mx-2">¡Hola Estudiante!</p>
+                        {%else%}
+                        <p class="nav-link mx-2">¡Hola Propietario!</p>
+                        {%endif%}
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-2" href="{% url 'perfil' %}">
+                            <i class="fas fa-plus-circle pe-2"></i>Perfil
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-2" href="{% url 'notificaciones' %}">
+                            <i class="fas fa-bell pe-2"></i>Notificaciones
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mx-2" href="{% url 'logout' %}">
+                            <i class="fas fa-heart pe-2"></i>Cerrar sesión
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-black btn-rounded" href="{% url 'login' %}">Iniciar sesión</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+<!-- Navbar -->
+
+{% block body %}
+
+{% endblock %}
+
+<!-- Include Bootstrap JS (optional, for Bootstrap features like modals) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<!-- Include Font Awesome JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+<!-- Other scripts -->
+</body>
+
+</html>
