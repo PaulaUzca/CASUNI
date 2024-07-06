@@ -10,7 +10,7 @@ class Solicitud(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     fechaInicio = models.DateTimeField()
     fechaFin = models.DateTimeField()
-    estado = models.CharField(max_length=10, choices=[('P', 'Pendiente'), ('A', 'Aceptada'), ('R', 'Rechazada')])
+    estado = models.CharField(max_length=10, choices=[('P', 'Pendiente'), ('A', 'Aceptada'), ('R', 'Rechazada')], default='P')
 
 
 

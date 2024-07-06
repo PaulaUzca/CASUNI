@@ -90,7 +90,7 @@
                       {% endif %}
 				</div>
 				<div class="col-md-2">
-					<img alt="Bootstrap Image Preview" src="{{ alojamiento.propietario.imagen.url }}" />
+					<img alt="Bootstrap Image Preview" src="{{ alojamiento.propietario.imagen.url }}" class="img-fluid" />
 				</div>
 			</div>
 			<p>
@@ -147,10 +147,15 @@
                                 {% endfor %}
                             </div>
                         {% endif %}
-                        <small id="mensajeHelp" class="form-text text-muted">Escribe un mensjae al propietario preguntandole por este alojamiento</small>
+                        <small id="mensajeHelp" class="form-text text-muted">Escribe un mensaje al propietario preguntandole por este alojamiento</small>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
+
+                                <!-- Agregar el botón para revisar la solicitud -->
+                     {% if solicitud_url %}
+                    <a href="{{ solicitud_url }}" class="btn btn-secondary">Revisar mi solicitud</a>
+                    {% endif %}
                 </form>
         </div>        
 	<div class="row">

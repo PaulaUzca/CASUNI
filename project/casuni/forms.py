@@ -10,7 +10,6 @@ class LoginForm(forms.Form):
         'placeholder': 'Enter password'
     }))
 
-
 class SolicitudAlojamiento(forms.Form):
     fechaDesde = forms.DateField(label='Fecha Desde')
     fechaHasta = forms.DateField(label='Fecha Hasta')

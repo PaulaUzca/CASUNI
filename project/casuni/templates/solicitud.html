@@ -1,0 +1,42 @@
+{% extends "layout.html" %} {% load static %} {% block head%}
+<link rel="stylesheet" href="{% static 'css/solicitud.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="titulo-reserva">Reservar alojamiento</h1>
+    <div class="card">
+        <div class="card-body">
+            <h4>{{ alojamiento.nombre }}</h4>
+            <div class="image-container">
+                <img src="{{ alojamiento.fotos.first.imagen.url }}" class="img-fluid rounded" alt="{{ alojamiento.nombre }}">
+            </div>
+            <br>         
+            <p class="descripcion">{{ alojamiento.descripcion }}</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Fecha Inicio:</strong> {{ solicitud.fechaInicio|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Fecha Fin:</strong> {{ solicitud.fechaFin|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+            <p><strong>Mensaje:</strong> {{ solicitud.texto }}</p>
+            <p><strong>Estado solicitud:</strong>
+                {% if solicitud.estado == 'P' %}
+                    Pendiente
+                {% elif solicitud.estado == 'A' %}
+                    Aceptado
+                {% elif solicitud.estado == 'R' %}
+                    Rechazado
+                {% endif %}
+
+             <!-- Botones de navegación -->
+             <div class="mt-3">
+                <a href="{% url 'home' %}" class="btn btn-primary me-2">Volver al menu de inicio</a>
+                <a href="{% url 'alojamiento_detalle' alojamiento.id %}" class="btn btn-secondary">Volver al alojamiento</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
