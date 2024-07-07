@@ -1,14 +1,7 @@
 body {
     background-color: #eee;
   }
-  
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh; /* Ajusta la altura según tus necesidades */
-    margin-top: 20px; /* Ajusta el valor según la cantidad de espacio deseada */
-  }
+
   
   .card {
     max-width: 600px; /* Define el ancho máximo del bloque */

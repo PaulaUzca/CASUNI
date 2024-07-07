@@ -9,5 +9,5 @@ class Reserva(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     fechaInicio = models.DateTimeField()
     fechaFin = models.DateTimeField()
-    estado = estado = models.CharField(max_length=100)
+    estado = models.CharField(max_length=100)
     texto = models.TextField()

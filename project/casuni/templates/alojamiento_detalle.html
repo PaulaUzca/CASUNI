@@ -1,4 +1,6 @@
 {% extends "layout.html" %} {% load static %} {% block head%}
+{% load custom_tags %}
+
 <link rel="stylesheet" href="{% static 'css/alojamiento_detalle.css' %}" />
 {% endblock %} 
 
@@ -78,7 +80,10 @@
 	<div class="row mt-5">
 		<div class="col-md-8">
 			<div class="row">
-				<div class="col-md-10">
+                <div class="col-md-2 image--cover-wrapper ">
+					<img alt="Bootstrap Image Preview" src="{{ alojamiento.propietario.imagen.url }}" class="img-fluid image--cover" />
+				</div>
+				<div class="col-md-6">
 					<h3>
 						Propiedad de {{alojamiento.propietario.user.first_name}}
 					</h3>
@@ -88,14 +93,12 @@
                       {% else %}
                       <strong>No tiene fecha de baja!</strong></p>
                       {% endif %}
-				</div>
-				<div class="col-md-2">
-					<img alt="Bootstrap Image Preview" src="{{ alojamiento.propietario.imagen.url }}" class="img-fluid" />
+                      <p>
+                        {{alojamiento.descripcion}}
+                        </p>
 				</div>
 			</div>
-			<p>
-                {{alojamiento.descripcion}}
-			</p>
+
 			<div class="row">
 				<div class="col-md-12">
 					<h3>Servicios:</h3>
@@ -107,66 +110,174 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-4">
-            <h4>¡Quiero este alojamiento!</h4>
-            <strong>$ {{ alojamiento.precio }} / mensual <strong>
-                <form method="post" role="form">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label for="id_fechaDesde">Fecha Desde</label>
-                        {{ form.fechaDesde }}
-                        {% if form.fechaDesde.errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.fechaDesde.errors %}
-                                    <strong>{{ error|escape }}</strong><br>
-                                {% endfor %}
+		<div class="col-md-4 d-flex align-items-center">
+            {% if request.user.is_authenticated %}
+                {% if request.user|has_estudiante %}
+                    <!--   VISTA SI ES ESTUDIANTE -->
+                    <div class="row">
+                        <h4>¡Quiero este alojamiento!</h4>
+                        <strong>$ {{ alojamiento.precio }} / mensual <strong>
+                        <form method="post" role="form">
+                            {% csrf_token %}
+                            
+                            <div class="form-group">
+                                <label for="id_fechaDesde">Fecha Desde</label>
+                                {{ form.fechaDesde }}
+                                {% if form.fechaDesde.errors %}
+                                    <div class="alert alert-danger">
+                                        {% for error in form.fechaDesde.errors %}
+                                            <strong>{{ error|escape }}</strong><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_fechaHasta">Fecha Hasta</label>
-                        {{ form.fechaHasta }}
-                        {% if form.fechaHasta.errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.fechaHasta.errors %}
-                                    <strong>{{ error|escape }}</strong><br>
-                                {% endfor %}
+                            
+                            <div class="form-group">
+                                <label for="id_fechaHasta">Fecha Hasta</label>
+                                {{ form.fechaHasta }}
+                                {% if form.fechaHasta.errors %}
+                                    <div class="alert alert-danger">
+                                        {% for error in form.fechaHasta.errors %}
+                                            <strong>{{ error|escape }}</strong><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_mensaje">Mensaje</label>
-                        {{ form.mensaje }}
-                        {% if form.mensaje.errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.mensaje.errors %}
-                                    <strong>{{ error|escape }}</strong><br>
-                                {% endfor %}
+                            
+                            <div class="form-group">
+                                <label for="id_mensaje">Mensaje</label>
+                                {{ form.mensaje }}
+                                {% if form.mensaje.errors %}
+                                    <div class="alert alert-danger">
+                                        {% for error in form.mensaje.errors %}
+                                            <strong>{{ error|escape }}</strong><br>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                <small id="mensajeHelp" class="form-text text-muted">Escribe un mensaje al propietario preguntandole por este alojamiento</small>
                             </div>
-                        {% endif %}
-                        <small id="mensajeHelp" class="form-text text-muted">Escribe un mensaje al propietario preguntandole por este alojamiento</small>
+                            
+                            <button type="submit" class="btn btn-primary mr-2">Submit</button>
+        
+                            <!-- Agregar el botón para revisar la solicitud -->
+                            {% if solicitud_url %}
+                                <a href="{{ solicitud_url }}" class="btn btn-secondary">Revisar mi solicitud</a>
+                            {% endif %}
+                        </form>
                     </div>
-                    
-                    <button type="submit" class="btn btn-primary mr-2">Submit</button>
-
-                                <!-- Agregar el botón para revisar la solicitud -->
-                     {% if solicitud_url %}
-                    <a href="{{ solicitud_url }}" class="btn btn-secondary">Revisar mi solicitud</a>
-                    {% endif %}
-                </form>
-        </div>        
+                {% elif request.user|has_propietario %}
+                    <!-- vista para el propietario! mostrar solicitudes y reservas -->
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3>Solicitudes pendientes</h3>
+                                {% if not alojamiento.solicitudes.all|tiene_pendiente %}
+                                    <p>No tiene solicitudes pendientes en este alojamiento </p>
+                                {% else %}
+                                    {% for solicitud in alojamiento.solicitudes.all|filter_pendiente %}
+                                        <div class="row mb-4">
+                                            <div class="col-md-12">
+                                                <div class="card rounded shadow-sm border-light mt-5 pb-5">
+                                                    <div class="row no-gutters">
+                                                        <div class="col-md-4 image--cover-wrapper">
+                                                            <img alt="Student Image" src="{{ solicitud.estudiante.imagen.url }}" class="img-fluid image--cover rounded-left" />
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title font-weight-bold">{{ solicitud.estudiante.user.first_name }}</h5>
+                                                                <p class="card-text"><strong>Descripción:</strong> {{ solicitud.estudiante.descripcion }}</p>
+                                                                <p class="card-text"><strong>Fecha de nacimiento:</strong> {{ solicitud.estudiante.fecha_nacimiento }}</p>
+                                                                <p class="card-text"><strong>Género:</strong> {{ solicitud.estudiante.get_genero_display }}</p>
+                                                                <p class="card-text"><strong>Mensaje:</strong> {{ solicitud.mensaje }}</p>
+                                                                <p class="card-text"><strong>Fechas de ocupación:</strong> {{ solicitud.fechaInicio }} - {{ solicitud.fechaFin }}</p>
+                                                                <p class="card-text"><strong>Solicitud realizada:</strong> {{ solicitud.fecha }}</p>
+                                                                <p class="card-text"><strong>Estado:</strong> {{ solicitud.get_estado_display }}</p>
+                                                                <div class="btn-group mt-3" role="group">
+                                                                    <button type="button" class="btn btn-success mr-2" onclick="handleSolicitud('aceptar', {{ solicitud.id }})">Aceptar</button>
+                                                                    <button type="button" class="btn btn-danger" onclick="handleSolicitud('rechazar', {{ solicitud.id }})">Rechazar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+                                    {% endfor %}
+                                {% endif %}
+        
+                                <h3>Reservas</h3>
+                                {% if not alojamiento.reservas.exists %}
+                                    <p>No tiene Reservas en este alojamiento</p>
+                                {% else %}
+                                    {% for reserva in alojamiento.reservas.all %}
+                                        <div class="row mb-4 card widget-card border-light shadow-sm mt-5 pb-5">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-4 image--cover-wrapper">
+                                                        <img alt="Student Image" src="{{ reserva.estudiante.imagen.url }}" class="img-fluid image--cover" />
+                                                    </div>
+                                                    <div class="col-md-8 card-text">
+                                                        <p>{{ reserva.estudiante.user.first_name }}</p>
+                                                    </div>
+                                                </div>
+                                                <p>{{ reserva.mensaje }}</p>
+                                                <p>Fechas de ocupación: {{ reserva.fechaInicio }} - {{ reserva.fechaFin }}</p>
+                                                <p>Reserva realizada: {{ reserva.fecha }}</p>
+                                                <p>Estado: {{ reserva.get_estado_display }}</p>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h4>¡Ingresa como estudiante para poder solicitar este alojamiento!</h4>
+                {% endif %}
+            {% else %}
+                <h4>¡Ingresa para poder ver esta información!</h4>
+            {% endif %}
+        </div>
+        
+        
 	<div class="row">
 		<div class="col-md-12">
 			<h3>
 				Reseñas
 			</h3>
 		</div>
-	</div>
+    </div>
+
 </div>
 
+
+
+
+<script>
+    // Aceptar o rechazar solicitud
+    function handleSolicitud(action, solicitudId) {
+        const url = `/solicitud/${solicitudId}/${action}/`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload(); // Reload the page to reflect changes
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
 
 {% endblock %} 
 

@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_tags %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -31,6 +32,20 @@
     }
     .navbar-nav {
         margin-left: auto;
+    }
+
+    .image--cover-wrapper {
+        height: 100px;
+        width: 100px;
+        padding: 0px;
+    }
+    .image--cover {
+        width: 100px;
+        height: 100px;
+        border-radius: 100%;
+
+        object-fit: cover;
+        object-position: center right;
     }
 </style>
 
@@ -72,11 +87,11 @@
             <ul class="navbar-nav ms-auto">
                 {% if request.user.is_authenticated %}
                     <li class="nav-item">
-                        {% if request.user.estudiante %}
-                        <p class="nav-link mx-2">¡Hola Estudiante!</p>
-                        {%else%}
-                        <p class="nav-link mx-2">¡Hola Propietario!</p>
-                        {%endif%}
+                        {% if request.user|has_estudiante %}
+                            <p class="nav-link mx-2">¡Hola Estudiante!</p>
+                        {% elif request.user|has_propietario %}
+                            <p class="nav-link mx-2">¡Hola Propietario!</p>
+                        {% endif %}
                     </li>
                     <li class="nav-item">
                         <a class="nav-link mx-2" href="{% url 'perfil' %}">

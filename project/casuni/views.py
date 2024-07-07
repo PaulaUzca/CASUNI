@@ -8,12 +8,13 @@ from .models import Alojamiento, Estudiante, Propietario, Solicitud
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from .vistas.notificaciones import send_notification
+from django.http import JsonResponse
 
 
 def home(request):
     usuario = request.user
     alojamientos = Alojamiento.objects.all()
-
     return render(request, "home.html", {"usuario": usuario, "alojamientos": alojamientos})
 
 def login_view(request):
@@ -26,9 +27,9 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 if user.estudiante.exists():
-                    return redirect('estudiante_home')  # Redirect to estudiante's profile page
+                    return redirect('home')  # Redirect to estudiante's profile page
                 elif user.propietario.exists():
-                    return redirect('propietario_home')  # Redirect to propietario's profile page
+                    return redirect('home')  # Redirect to propietario's profile page
             else:
                 messages.error(request, 'Credenciales inválidas. Inténtelo de nuevo.')
     else:
@@ -46,12 +47,12 @@ def logout(request):
 def perfil(request):
     user = user=request.user
     nombre_usuario = request.user.username
-    if  user.estudiante:
-        estudiante = get_object_or_404(Estudiante, user=request.user)
+    if  user.estudiante.all():
+        estudiante = user.estudiante.first()
         return render(request, 'estudiante_perfil.html', {'estudiante': estudiante})
     else:
-        propietario = get_object_or_404(Propietario, user)
-        alojamientos = Alojamiento.objects.filter(propietario=propietario)
+        propietario = user.propietario.first()
+        alojamientos = Alojamiento.objects.filter(propietario=propietario.id)
         return render(request, 'propietario_perfil.html', {'propietario': propietario, 'alojamientos': alojamientos})
 
 @login_required
@@ -70,33 +71,44 @@ def alojamiento_detalle(request, alojamiento_id):
             fecha_hasta = form.cleaned_data['fechaHasta']
             mensaje = form.cleaned_data['mensaje']
             
-            solicitud = Solicitud(
-                estudiante=estudiante,  
+            # Check if there is already a pending solicitud for this alojamiento by this estudiante
+            existing_solicitud = Solicitud.objects.filter(
+                estudiante=estudiante,
                 alojamiento=alojamiento,
-                fechaInicio=fecha_desde,
-                fechaFin=fecha_hasta,
-                texto=mensaje,
                 estado='P'  # 'P' for Pendiente
-            )
-            solicitud.save()
+            ).exists()
             
-            # Clear form data after successful submission
-            form = SolicitudAlojamiento()  # Re-initialize with an empty instance
+            if existing_solicitud:
+                messages.error(request, 'Ya tienes una solicitud pendiente para este alojamiento.')
+            else:
+                # Create new solicitud
+                solicitud = Solicitud(
+                    estudiante=estudiante,  
+                    alojamiento=alojamiento,
+                    fechaInicio=fecha_desde,
+                    fechaFin=fecha_hasta,
+                    texto=mensaje,
+                    estado='P'  # 'P' for Pendiente
+                )
+                solicitud.save()
             
-            # Show success message
-            messages.success(request, 'La solicitud se ha creado correctamente.')
+                # Clear form data after successful submission
+                form = SolicitudAlojamiento()  # Re-initialize with an empty instance
+                
+                # Show success message
+                messages.success(request, 'La solicitud se ha creado correctamente.')
+                
+                # Generate URL for solicitud detail page
+                solicitud_url = reverse('solicitud', kwargs={'alojamiento_id': alojamiento_id, 'solicitud_id': solicitud.id})
+                
+                # Update context with solicitud URL
+                context = {
+                    'alojamiento': alojamiento,
+                    'form': form,
+                    'solicitud_url': solicitud_url,
+                }
             
-            # Generate URL for solicitud detail page
-            solicitud_url = reverse('solicitud', kwargs={'alojamiento_id': alojamiento_id, 'solicitud_id': solicitud.id})
-            
-            # Update context with solicitud URL
-            context = {
-                'alojamiento': alojamiento,
-                'form': form,
-                'solicitud_url': solicitud_url,
-            }
-            
-            return render(request, 'alojamiento_detalle.html', context)
+                return render(request, 'alojamiento_detalle.html', context)
     else:
         form = SolicitudAlojamiento()
 
@@ -108,12 +120,30 @@ def alojamiento_detalle(request, alojamiento_id):
     
     return render(request, 'alojamiento_detalle.html', context)
 
-def solicitud(request,alojamiento_id,solicitud_id):
-    alojamiento = get_object_or_404(Alojamiento, pk=alojamiento_id)
+
+@login_required
+def aceptar_solicitud(request, id):
+    solicitud = get_object_or_404(Solicitud, id=id)
+    solicitud.estado = 'A'
+    solicitud.save()
+    send_notification(solicitud.estudiante.user, "Tu solicitud ha sido aceptada", "solicitud aceptada")
+    return JsonResponse({'status': 'success', 'message': 'Solicitud aceptada'})
+
+@login_required
+def rechazar_solicitud(request, id):
+    solicitud = get_object_or_404(Solicitud, id=id)
+    solicitud.estado = 'rechazada'
+    solicitud.save()
+    send_notification(solicitud.estudiante.user, "Tu solicitud ha sido rechazada", "solicitud rechazada")
+    return JsonResponse({'status': 'success', 'message': 'Solicitud rechazada'})
+
+
+
+def solicitud(request,solicitud_id):
     solicitud = get_object_or_404(Solicitud, pk=solicitud_id)
     
     context = {
-        'alojamiento': alojamiento,
+        'alojamiento': solicitud.alojamiento,
         'solicitud': solicitud,
     }
     return render(request, 'solicitud.html', context)

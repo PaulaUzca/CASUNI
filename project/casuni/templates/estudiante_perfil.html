@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% load static %}
+{% load custom_tags %}
 
 {% block head %}
 <!-- Link template https://bootstrapbrain.com/component/bootstrap-free-profile-template/#code -->
@@ -34,25 +35,73 @@
                 </div>
               </div>
               <div class="col-12">
+                <!-- notificaciones -->
                 <div class="card widget-card border-light shadow-sm">
                   <div class="card-header" style="color: #666;">Notificaciones</div>
                   <div class="card-body">
                     <ul class="list-group list-group-flush mb-0">
-                      <li class="list-group-item">
-                        <h6 class="mb-1">
-                          <span class="bii bi-chat-right-dots-fill me-2"></span>
-                          ¡Te han aceptado la reserva!
-                        </h6>
-                      </li>
-                      <li class="list-group-item">
-                        <h6 class="mb-1">
-                          <span class="bii bi-chat-left-quote-fill me-2"></span>
-                          ¡Dario ha contestado tu pregunta!
-                        </h6>
-                      </li>
+                      {% if not estudiante.user.notificaciones.all %}
+                        <li class="list-group-item">
+                          <h6 class="mb-1">
+                            No tiene notificaciones
+                          </h6>
+                        </li>
+                      {% endif %}
+                      {% for notificacion in estudiante.user.notificaciones.all %}
+                        <li class="list-group-item">
+                          <h6 class="mb-1">
+                            <span class="bii bi-chat-right-dots-fill me-2"></span>
+                            {{notificacion.texto}}
+                          </h6>
+                        </li>
+                      {% endfor %}
                     </ul>
                   </div>
                 </div>
+                <!-- fin notificaciones -->
+
+                <!-- Solicitudes -->
+                <div class="container-fluid">
+                  <div class="row">
+                      <div class="col-md-12 mt-5">
+                          <h3 class="mb-1 display-6 text-left text-dark">Solicitudes</h3>
+                          {% if not estudiante.solicitudes.all %}
+                              <p>No tiene solicitudes pendientes </p>
+                          {% else %}
+                              {% for solicitud in estudiante.solicitudes.all %}
+                                  <div class="row mb-4">
+                                    <div class="col-md-12">
+                                        <a href="{% url 'solicitud' solicitud.id %}" class="card-link">
+                                            <div class="card rounded shadow-sm border-light mt-5 pb-5">
+                                                <div class="row no-gutters">
+                                                    <div class="col-md-4 image--cover-wrapper">
+                                                        {% if solicitud.alojamiento.fotos.all %}
+                                                        <img alt="Student Image" src="{{ solicitud.alojamiento.fotos.first.imagen.url }}" class="img-fluid image--cover rounded-left" />
+                                                        {% else %}
+                                                        <img src="{% static 'placeholder.jpg' %}" class="card-img" alt="Placeholder">
+                                                        {% endif %}
+                                                    </div>
+                                                    <div class="col-md-8">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title font-weight-bold">{{ solicitud.alojamiento.nombre }}</h5>
+                                                            <p class="card-text"><strong>{{ solicitud.alojamiento.descripcion }}</strong></p>
+                                                            <p class="card-text"><strong>Mensaje:</strong> {{ solicitud.mensaje }}</p>
+                                                            <p class="card-text"><strong>Fechas de ocupación:</strong> {{ solicitud.fechaInicio }} - {{ solicitud.fechaFin }}</p>
+                                                            <p class="card-text"><strong>Solicitud realizada:</strong> {{ solicitud.fecha }}</p>
+                                                            <p class="card-text"><strong>Estado:</strong> {{ solicitud.get_estado_display }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                              {% endfor %}
+                          {% endif %}
+                      </div>
+                  </div>
+                </div>
+              <!-- fin solicitudes pendientes -->
               </div>
             </div>
           </div>
@@ -67,6 +116,67 @@
                 </div>
               </div>
             </div>
+           
+            <!-- alojamiento del estudiante -->
+            <div class="card widget-card border-light shadow-sm">
+              <div class="card-body p-4">
+                <h2 class="mb-1 display-6 text-left text-dark">Mi alojamiento</h2>
+                {% if not estudiante.reservas.all %}
+                  <p class="text-dark text-left lead fs-4 mb-3">No tiene ninguna reserva activa</p>
+                {% endif %}
+                </div>  
+                {% for reserva in estudiante.reservas.all %}
+                  {% if reserva|reserva_activa %}
+                      <div class="container-fluid card-alojamiento">
+                        <div class="row">
+                            <div class="col-md-4">
+                                {% if reserva.alojamiento.fotos.all %}
+                                <img src="{{reserva.alojamiento.fotos.first.imagen.url}}" class="card-img" alt="...">
+                                {% else %}
+                                <img src="{% static 'placeholder.jpg' %}" class="card-img" alt="Placeholder">
+                                {% endif %}
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p>
+                                            {{reserva.alojamiento.direccion}}
+                                        </p>
+                                        <h4>
+                                            <a href="{% url 'reserva.alojamiento_detalle' reserva.alojamiento.id %}">
+                                            {{reserva.alojamiento.nombre}}
+                                            </a>
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="text-left">
+                                            Calificacion  ⭐ (X Reviews)
+                                        </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p class="text-right">
+                                            $ {{alojamiento.precio}}/mensual
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-12">
+                                      {{reserva.fecha_inicio}} - {{reserva.fecha_fin}}
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                  
+                {% else %}
+                {% endif %}
+              {% endfor %}
+
+            </div>
+            <!-- fin alojamiento del estudiante -->
+             
           </div>
         </div>
     </div>
