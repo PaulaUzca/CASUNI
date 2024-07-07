@@ -61,12 +61,13 @@ def notifications(request):
 
 def alojamiento_detalle(request, alojamiento_id):
     alojamiento = get_object_or_404(Alojamiento, pk=alojamiento_id)
-    
+    estudiante = get_object_or_404(Estudiante, user=request.user)
+    solicitud_url = None  
+
     if request.method == 'POST':
         form = SolicitudAlojamiento(request.POST)
         
         if form.is_valid():
-            estudiante = Estudiante.objects.get(pk=1)  # Temporary, replace with actual logic to get current user
             fecha_desde = form.cleaned_data['fechaDesde']
             fecha_hasta = form.cleaned_data['fechaHasta']
             mensaje = form.cleaned_data['mensaje']
@@ -76,10 +77,12 @@ def alojamiento_detalle(request, alojamiento_id):
                 estudiante=estudiante,
                 alojamiento=alojamiento,
                 estado='P'  # 'P' for Pendiente
-            ).exists()
+            ).first()
             
             if existing_solicitud:
                 messages.error(request, 'Ya tienes una solicitud pendiente para este alojamiento.')
+                solicitud_url = reverse('solicitud', kwargs={'solicitud_id': existing_solicitud.id})
+                form = SolicitudAlojamiento() 
             else:
                 # Create new solicitud
                 solicitud = Solicitud(
@@ -87,35 +90,28 @@ def alojamiento_detalle(request, alojamiento_id):
                     alojamiento=alojamiento,
                     fechaInicio=fecha_desde,
                     fechaFin=fecha_hasta,
-                    texto=mensaje,
-                    estado='P'  # 'P' for Pendiente
+                    texto=mensaje
                 )
                 solicitud.save()
             
-                # Clear form data after successful submission
-                form = SolicitudAlojamiento()  # Re-initialize with an empty instance
-                
-                # Show success message
+                form = SolicitudAlojamiento()  
                 messages.success(request, 'La solicitud se ha creado correctamente.')
-                
-                # Generate URL for solicitud detail page
-                solicitud_url = reverse('solicitud', kwargs={'alojamiento_id': alojamiento_id, 'solicitud_id': solicitud.id})
-                
-                # Update context with solicitud URL
-                context = {
-                    'alojamiento': alojamiento,
-                    'form': form,
-                    'solicitud_url': solicitud_url,
-                }
-            
-                return render(request, 'alojamiento_detalle.html', context)
+                solicitud_url = reverse('solicitud', kwargs={'solicitud_id': solicitud.id})
     else:
         form = SolicitudAlojamiento()
+        existing_solicitud = Solicitud.objects.filter(
+            estudiante=estudiante,
+            alojamiento=alojamiento,
+            estado='P'
+        ).first()
+        if existing_solicitud:
+            solicitud_url = reverse('solicitud', kwargs={'solicitud_id': existing_solicitud.id})
 
     # Context with initial form or form with errors
     context = {
         'alojamiento': alojamiento,
         'form': form,
+        'solicitud_url': solicitud_url,
     }
     
     return render(request, 'alojamiento_detalle.html', context)
@@ -136,7 +132,6 @@ def rechazar_solicitud(request, id):
     solicitud.save()
     send_notification(solicitud.estudiante.user, "Tu solicitud ha sido rechazada", "solicitud rechazada")
     return JsonResponse({'status': 'success', 'message': 'Solicitud rechazada'})
-
 
 
 def solicitud(request,solicitud_id):
