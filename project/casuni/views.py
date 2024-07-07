@@ -149,7 +149,7 @@ def aceptar_solicitud(request, id):
 @login_required
 def rechazar_solicitud(request, id):
     solicitud = get_object_or_404(Solicitud, id=id)
-    solicitud.estado = 'rechazada'
+    solicitud.estado = 'R'
     solicitud.save()
     send_notification(solicitud.estudiante.user, "Tu solicitud ha sido rechazada", "solicitud rechazada")
     return JsonResponse({'status': 'success', 'message': 'Solicitud rechazada'})
@@ -157,10 +157,16 @@ def rechazar_solicitud(request, id):
 @login_required
 def solicitud(request,solicitud_id):
     solicitud = get_object_or_404(Solicitud, pk=solicitud_id)
-    
+    # Obtener la reserva activa del estudiante para el alojamiento de la solicitud
+    reserva_activa = Reserva.objects.filter(
+        estudiante=solicitud.estudiante,
+        estado='Activa'
+    ).first()
+
     context = {
         'alojamiento': solicitud.alojamiento,
         'solicitud': solicitud,
+        'reserva_activa': reserva_activa,
     }
     return render(request, 'solicitud.html', context)
 
