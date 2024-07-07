@@ -45,6 +45,12 @@
                     <div class="mt-3">
                         <a href="{% url 'home' %}" class="btn btn-primary me-2">Volver al menu de inicio</a>
                         <a href="{% url 'alojamiento_detalle' alojamiento.id %}" class="btn btn-secondary">Volver al alojamiento</a>
+                    <!-- Mostrar botón de crear reserva si la solicitud está aceptada -->
+                    {% if solicitud.estado == 'A' %}
+                        {% if not existe_reserva %}
+                            <a href="{% url 'crear_reserva' solicitud.id %}" class="btn btn-success">Crear reserva</a>
+                        {% endif %}
+                    {% endif %}
                     </div>
                 </div>
             </div>

@@ -13,4 +13,5 @@ urlpatterns = [
     path('solicitud/<int:solicitud_id>', views.solicitud, name='solicitud'),
     path('solicitud/<int:id>/aceptar/', views.aceptar_solicitud, name='aceptar_solicitud'),
     path('solicitud/<int:id>/rechazar/', views.rechazar_solicitud, name='rechazar_solicitud'),
+    path('solicitud/<int:solicitud_id>/crear_reserva/', views.crear_reserva, name='crear_reserva'),
 ]

@@ -126,7 +126,7 @@
                 {% endif %}
                 </div>  
                 {% for reserva in estudiante.reservas.all %}
-                  {% if reserva|reserva_activa %}
+                  {% if reserva.estado == 'Activa'%}
                       <div class="container-fluid card-alojamiento">
                         <div class="row">
                             <div class="col-md-4">
@@ -143,7 +143,7 @@
                                             {{reserva.alojamiento.direccion}}
                                         </p>
                                         <h4>
-                                            <a href="{% url 'reserva.alojamiento_detalle' reserva.alojamiento.id %}">
+                                            <a href="{% url 'alojamiento_detalle' reserva.alojamiento.id %}">
                                             {{reserva.alojamiento.nombre}}
                                             </a>
                                         </h4>
@@ -157,13 +157,13 @@
                                     </div>
                                     <div class="col-md-6">
                                         <p class="text-right">
-                                            $ {{alojamiento.precio}}/mensual
+                                            $ {{reserva.alojamiento.precio}}/mensual
                                         </p>
                                     </div>
                                 </div>
                                 <div class="row">
                                   <div class="col-md-12">
-                                      {{reserva.fecha_inicio}} - {{reserva.fecha_fin}}
+                                      {{reserva.fechaInicio|date:"d/m/Y"}} - {{reserva.fechaFin|date:"d/m/Y"}}
                                   </div>
                               </div>
                             </div>
