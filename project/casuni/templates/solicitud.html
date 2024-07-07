@@ -46,15 +46,16 @@
                         <a href="{% url 'alojamiento_detalle' alojamiento.id %}" class="btn btn-secondary">Volver al alojamiento</a>
                     </div>
                     {% if reserva_activa %}
-                    <br>
-                    <h5>Reserva actual:</h5>
-                    <p><strong>Alojamiento:</strong> {{ reserva_activa.alojamiento.nombre }}</p>
-                    <p><strong>Fecha Inicio:</strong> {{ reserva_activa.fechaInicio|date:"d/m/Y" }}</p>
-                    <p><strong>Fecha Fin:</strong> {{ reserva_activa.fechaFin|date:"d/m/Y" }}</p>
-                    <p><strong>Estado:</strong> {{reserva_activa.estado}}</p>
+                        <br>
+                        <h5>Reserva actual:</h5>
+                        <p><strong>Alojamiento:</strong> {{ reserva_activa.alojamiento.nombre }}</p>
+                        <p><strong>Fecha Inicio:</strong> {{ reserva_activa.fechaInicio|date:"d/m/Y" }}</p>
+                        <p><strong>Fecha Fin:</strong> {{ reserva_activa.fechaFin|date:"d/m/Y" }}</p>
+                        <p><strong>Estado:</strong> {{reserva_activa.estado}}</p>
                     {% else %}
                         <!-- Mostrar botón de crear reserva si la solicitud está aceptada -->
                         {% if solicitud.estado == 'A' %}
+                            <br>
                             <a href="{% url 'crear_reserva' solicitud.id %}" class="btn btn-success">Crear reserva</a>
                         {% endif %}
                     {% endif %}

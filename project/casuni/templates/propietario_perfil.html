@@ -38,18 +38,21 @@
                   <div class="card-header" style="color: #666;">Notificaciones</div>
                   <div class="card-body">
                     <ul class="list-group list-group-flush mb-0">
+                    {% if not propietario.user.notificaciones.all %}
                       <li class="list-group-item">
                         <h6 class="mb-1">
-                          <span class="bi bi-bell-fill me-2"></span>
-                          ¡Te llegado una nueva reserva!
+                          No tiene notificaciones
                         </h6>
                       </li>
+                    {% endif %}
+                    {% for notificacion in propietario.user.notificaciones.all %}
                       <li class="list-group-item">
                         <h6 class="mb-1">
-                          <span class="bbi bi-star-fill me-2"></span>
-                          ¡Tienes una nueva calificación!
+                          <span class="bi bi-bell me-2"></span>
+                          {{notificacion.texto}}
                         </h6>
                       </li>
+                    {% endfor %}
                     </ul>
                   </div>
                 </div>

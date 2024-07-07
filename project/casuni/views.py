@@ -81,7 +81,17 @@ def alojamiento_detalle(request, alojamiento_id):
                 fecha_hasta = form.cleaned_data['fechaHasta']
                 mensaje = form.cleaned_data['mensaje']
 
-                if estudiante:
+                if fecha_desde >= fecha_hasta:
+                    messages.error(request, 'La fecha de inicio debe ser anterior a la fecha de fin.')
+                elif fecha_desde < alojamiento.fecha_inicio:
+                    messages.error(request, 'La fecha de inicio debe estar después de la fecha disponible del alojamiento.')
+                elif alojamiento.fecha_fin and fecha_desde > alojamiento.fecha_fin:
+                    messages.error(request, 'La fecha de inicio debe estar antes de la fecha límite disponible del alojamiento.')
+                elif fecha_hasta and fecha_desde >= fecha_hasta:
+                    messages.error(request, 'La fecha de inicio debe ser anterior a la fecha de fin.')
+                elif fecha_hasta and (alojamiento.fecha_fin and fecha_hasta > alojamiento.fecha_fin):
+                    messages.error(request, 'La fecha de fin debe estar antes de la fecha límite disponible del alojamiento.')
+                elif estudiante:
                     # Verificamos si ya existe una solicitud pendiente
                     existing_solicitud = Solicitud.objects.filter(
                         estudiante=estudiante,
@@ -89,10 +99,7 @@ def alojamiento_detalle(request, alojamiento_id):
                     ).first()
 
                     if existing_solicitud:
-                        if existing_solicitud.estado == 'P':
                             messages.error(request, 'Ya tienes una solicitud pendiente para este alojamiento.')
-                            solicitud_url = reverse('solicitud', kwargs={'solicitud_id': existing_solicitud.id})
-                        else:
                             solicitud_url = reverse('solicitud', kwargs={'solicitud_id': existing_solicitud.id})
                     else:
                         # Creamos la nueva solicitud
@@ -101,25 +108,23 @@ def alojamiento_detalle(request, alojamiento_id):
                             alojamiento=alojamiento,
                             fechaInicio=fecha_desde,
                             fechaFin=fecha_hasta,
-                            texto=mensaje,
-                            estado='P'  
+                            texto=mensaje
                         )
                         solicitud.save()
 
                         # Mostramos el mensaje de éxito
                         messages.success(request, 'La solicitud se ha creado correctamente.')
-
                         # Generamos la URL para la página de detalles de la solicitud
                         solicitud_url = reverse('solicitud', kwargs={'solicitud_id': solicitud.id})
-
                         # Reinicializamos el formulario después de enviarlo con éxito
                         form = SolicitudAlojamiento()  # Re-inicializamos con una instancia vacía
+                        send_notification(solicitud.alojamiento.propietario.user, f"Te ha llegado una nueva solicitud para {solicitud.alojamiento.nombre}", "solicitud_nueva")
 
                 else:
                     messages.error(request, 'Solo los estudiantes pueden realizar solicitudes de alojamiento.')
 
         else:
-            form = SolicitudAlojamiento()
+            form = SolicitudAlojamiento()  # Re-inicializamos con una instancia vacía
             if estudiante:
                 existing_solicitud = Solicitud.objects.filter(
                     estudiante=estudiante,
@@ -128,7 +133,6 @@ def alojamiento_detalle(request, alojamiento_id):
                 if existing_solicitud:
                     solicitud_url = reverse('solicitud', kwargs={'solicitud_id': existing_solicitud.id})
 
-    # Contexto con el formulario inicial o el formulario con errores
     context = {
         'alojamiento': alojamiento,
         'form': form,
@@ -141,9 +145,22 @@ def alojamiento_detalle(request, alojamiento_id):
 @login_required
 def aceptar_solicitud(request, id):
     solicitud = get_object_or_404(Solicitud, id=id)
+    # Obtener todas las solicitudes aceptadas para el alojamiento de esta solicitud
+
+    if Solicitud.objects.filter(
+            alojamiento=solicitud.alojamiento,
+            estado='A',  # Considerar solo las reservas aceptadas
+            fechaInicio__lte=solicitud.fechaFin,
+            fechaFin__gte=solicitud.fechaInicio
+    ).exists():
+        return JsonResponse({'status': 'error', 'message': 'Ya existe una solicitud aceptada para estas fechas.'})
+      
+    # Cambiar el estado de la solicitud
     solicitud.estado = 'A'
     solicitud.save()
-    send_notification(solicitud.estudiante.user, "Tu solicitud ha sido aceptada", "solicitud aceptada")
+    
+    # Si no hay solapamientos, aceptar la solicitud y enviar la notificación
+    send_notification(solicitud.estudiante.user, f"Tu solicitud para {solicitud.alojamiento.nombre} ha sido aceptada", "solicitud_aceptada")
     return JsonResponse({'status': 'success', 'message': 'Solicitud aceptada'})
 
 @login_required
@@ -151,7 +168,7 @@ def rechazar_solicitud(request, id):
     solicitud = get_object_or_404(Solicitud, id=id)
     solicitud.estado = 'R'
     solicitud.save()
-    send_notification(solicitud.estudiante.user, "Tu solicitud ha sido rechazada", "solicitud rechazada")
+    send_notification(solicitud.estudiante.user, f"Tu solicitud para {solicitud.alojamiento.nombre} ha sido rechazada", "solicitud rechazada")
     return JsonResponse({'status': 'success', 'message': 'Solicitud rechazada'})
 
 @login_required
@@ -183,6 +200,17 @@ def propietario_perfil(request, propietario_id):
 @login_required
 def crear_reserva(request, solicitud_id):
     solicitud = get_object_or_404(Solicitud, id=solicitud_id)
+
+    # Verificar si hay una reserva activa para el alojamiento
+    reserva_activa = Reserva.objects.filter(
+        alojamiento=solicitud.alojamiento,
+        estado='Activa'
+    ).first()
+
+    if reserva_activa:
+        messages.error(request, f'El alojamiento "{solicitud.alojamiento.nombre}" ya tiene una reserva activa.')
+        return redirect('estudiante_perfil', estudiante_id=solicitud.estudiante.id)
+
     # Obtener los datos del formulario de solicitud
     fecha_desde = solicitud.fechaInicio
     fecha_hasta = solicitud.fechaFin
@@ -200,5 +228,6 @@ def crear_reserva(request, solicitud_id):
             
     # Guardar la reserva en la base de datos
     reserva.save()
-    messages.success(request, 'La reserva se ha creado correctamente.')
+    send_notification(reserva.estudiante.user, f"La reserva para {solicitud.alojamiento.nombre} ha sido exitosa", "reserva")
+    send_notification(reserva.alojamiento.propietario.user, f"La reserva para {solicitud.alojamiento.nombre} ha sido exitosa", "reserva")
     return redirect('estudiante_perfil', estudiante_id=solicitud.estudiante.id) 

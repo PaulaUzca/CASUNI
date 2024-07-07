@@ -11,6 +11,6 @@ class LoginForm(forms.Form):
     }))
 
 class SolicitudAlojamiento(forms.Form):
-    fechaDesde = forms.DateField(label='Fecha Desde')
-    fechaHasta = forms.DateField(label='Fecha Hasta')
+    fechaDesde = forms.DateField(label='Fecha Desde', widget=forms.DateInput(attrs={'type': 'date'}))
+    fechaHasta = forms.DateField(label='Fecha Hasta', widget=forms.DateInput(attrs={'type': 'date'}))
     mensaje = forms.CharField(label='Mensaje', widget=forms.Textarea(attrs={'rows': 3}))
