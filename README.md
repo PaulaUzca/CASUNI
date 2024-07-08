@@ -1,5 +1,5 @@
-# ProyectoMPA-Web
-Proyecto de mitad de curso para Programación web
+# Proyecto CASUNI
+Proyecto de ingenieria de software
 
 Para correr el proyecto:
 1. Tener los settings correcto en el archivo ```.env```
