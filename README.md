@@ -22,4 +22,5 @@ Para hacer cambios activar un virtual enviroment y luego:
 1. Correr ```pip install -r requirements.txt```
 2. Al finalizar ```pip freeze > requirements.txt```
 
-Todas las contraseñas de los usuarios son fakePassword123
+Todas las contraseñas de los usuarios son fakePassword
+Para el administrador es el usuario paula y la contraseña fakePassword123
