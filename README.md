@@ -1,9 +1,14 @@
 # Proyecto CASUNI
 Proyecto de ingenieria de software para encontrar alojamiento para estudiantes
+
 2024-07-08
+
 Base de datos relación postgresql
+
 Framework de web MPA: Django 
+
 Estilos y frontend: html, css, bootstrap
+
 Paula Uzcátegui León y Silvia Cárdenas
 
 Para correr el proyecto:
