@@ -1,5 +1,10 @@
 # Proyecto CASUNI
-Proyecto de ingenieria de software
+Proyecto de ingenieria de software para encontrar alojamiento para estudiantes
+2024-07-08
+Base de datos relación postgresql
+Framework de web MPA: Django 
+Estilos y frontend: html, css, bootstrap
+Paula Uzcátegui León y Silvia Cárdenas
 
 Para correr el proyecto:
 1. Tener los settings correcto en el archivo ```.env```
@@ -12,3 +17,4 @@ Para hacer cambios activar un virtual enviroment y luego:
 1. Correr ```pip install -r requirements.txt```
 2. Al finalizar ```pip freeze > requirements.txt```
 
+Todas las contraseñas de los usuarios son fakePassword123
