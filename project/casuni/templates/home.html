@@ -1,13 +1,13 @@
 {% extends "layout.html" %}
 {% load static %}
-
+{% load custom_tags %}
 
 {% block head%}
 <link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
 
 {% block body%}
-<div class="container">
+<div class="container mt-5">
     <div class="row ng-scope">
         <div class="col-md-9 col-md-pull-3">
             {% for alojamiento in alojamientos %}
@@ -43,7 +43,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <p class="text-left">
-                                    Calificacion  ⭐ (X Reviews)
+                                    Calificación: ⭐ {% average_calificacion alojamiento %} ( {% count_reseñas alojamiento %} Reseñas)
                                 </p>
                             </div>
                             <div class="col-md-6">

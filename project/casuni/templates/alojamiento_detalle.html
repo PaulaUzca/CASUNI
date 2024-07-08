@@ -13,7 +13,7 @@
 		<div class="col-md-12">
 			<h2>{{ alojamiento.nombre }}</h2>
 			<p>
-                ⭐ PUNTAJE · X Reviews · {{alojamiento.direccion}}
+                ⭐ {% average_calificacion alojamiento %} · Reseñas: {% count_reseñas alojamiento %} · {{alojamiento.direccion}}
 			</p>
 		</div>
 	</div>
@@ -81,8 +81,14 @@
 		<div class="col-md-8">
 			<div class="row">
                 <div class="col-md-2 image--cover-wrapper ">
+                    {% if request.user.is_authenticated %}
+                    <a href="{% url 'vista_propietario' alojamiento.propietario.id %}">
 					<img alt="Bootstrap Image Preview" src="{{ alojamiento.propietario.imagen.url }}" class="img-fluid image--cover" />
-				</div>
+                    </a>
+                    {%else%}
+					<img alt="Bootstrap Image Preview" src="{{ alojamiento.propietario.imagen.url }}" class="img-fluid image--cover" />
+                    {%endif%}
+                </div>
 				<div class="col-md-6">
 					<h3>
 						Propiedad de {{alojamiento.propietario.user.first_name}}
@@ -95,18 +101,69 @@
                       {% endif %}
                       <p>
                         {{alojamiento.descripcion}}
-                        </p>
-				</div>
-			</div>
+                    </p>
+                    <div class="col-md-12">
+                        <strong>Servicios:</strong>
+                        <ul>
+                        {% for servicio in alojamiento.servicios.all %}
+                        <li>{{ servicio.nombre }}</li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                            
+                    <div class="col-md-12 mt-5">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h6>
+                                    Reseñas
+                                </h6>
+                                <div class="col-md-12 mb-3">
+                                    {% if not alojamiento.reservas|reservas_finalizada%}
+                                    <p>No hay reseñas</p>
+                                    {%endif%}
+                                    {% for reserva in alojamiento.reservas.all%}
+                                        {% for reseña in reserva.reseñas.all %}
+                                        <div>
+                                            <p><em>
+                                                <strong>{{reseña.reserva.estudiante.user.first_name}} (Estadia {{reseña.reserva.fechaInicio}} - {{reseña.reserva.fechaFin}}): </strong> {{ reseña.texto }}
+                                                </em>
+                                            </p>
+                                            <p class="text-muted"> Calificación: ⭐​ {{ reseña.calificacion }} </p>
 
-			<div class="row">
-				<div class="col-md-12">
-					<h3>Servicios:</h3>
-                    <ul>
-                    {% for servicio in alojamiento.servicios.all %}
-                    <li>{{ servicio.nombre }}</li>
-                    {% endfor %}
-                    </ul>
+                                            <small class="text-muted"> {{ reseña.fecha }}</small>
+                                        </div>
+                                        {%endfor%}
+                                        {% if request.user.is_authenticated%}
+                                            {% if request.user|has_estudiante %}
+                                                {% if not reserva.reseñas.exists %}
+                                                    <div class="row mt-4">
+                                                        <div class="col-md-12">
+                                                            <strong class="mb-4">¿Qué te pareció este alojamiento?</strong>
+                                                            <form id="resenaForm" role="form">
+                                                                <!-- Campo oculto para el ID de la reserva -->
+                                                                <input type="hidden" id="reserva_id" name="reserva_id" value="{{ reserva.id }}">
+                                                                
+                                                                <div class="form-group">
+                                                                    <label for="review">Reseña</label>
+                                                                    <textarea class="form-control" id="review" name="review" rows="3" placeholder="Escribe tu reseña"></textarea>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="rating">Calificación (de 1 a 5) ⭐</label>
+                                                                    <input type="number" class="form-control" id="rating" name="rating" min="1" max="5" placeholder="Ingrese su calificación" required>
+                                                                </div>
+                                                                <button type="submit" class="btn btn-primary">Publicar</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {%endif%}
+                                    
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 				</div>
 			</div>
 		</div>
@@ -215,16 +272,17 @@
                                             <div class="col-md-12">
                                                 <div class="row">
                                                     <div class="col-md-4 image--cover-wrapper">
-                                                        <img alt="Student Image" src="{{ reserva.estudiante.imagen.url }}" class="img-fluid image--cover" />
+                                                        <img alt="Student Image" src="{{ reserva.estudiante.imagen.url }}" class="img-fluid image--cover rounded-left" />
                                                     </div>
                                                     <div class="col-md-8 card-text">
-                                                        <p>{{ reserva.estudiante.user.first_name }}</p>
+                                                        <p><em>Estudiante</em></p>
+                                                        <h6>{{ reserva.estudiante.user.first_name }}</h6>
                                                     </div>
                                                 </div>
                                                 <p>{{ reserva.mensaje }}</p>
                                                 <p>Fechas de ocupación: {{ reserva.fechaInicio }} - {{ reserva.fechaFin }}</p>
                                                 <p>Fecha de realización de la reserva: {{ reserva.fecha }}</p>
-                                                <p>Estado: {{ reserva.estado }}</p>
+                                                <strong>Estado: {{ reserva.estado }}</strong>
                                             </div>
                                         </div>
                                     {% endfor %}
@@ -239,18 +297,193 @@
                 <h4>¡Ingresa para poder ver esta información!</h4>
             {% endif %}
         </div>
-        
-        
-	<div class="row">
-		<div class="col-md-12">
-			<h3>
-				Reseñas
-			</h3>
-		</div>
-    </div>
+    
 
 </div>
 
+<!-- SECCION DE PREGUNTAS -->
+<div class="container-fluid mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="mb-4">
+                Preguntas
+            </h3>
+            <div class="row">
+                {% if not alojamiento.preguntas.exists %}
+                <div class="alert alert-info w-100 text-center" role="alert">
+                    Sé el primero en preguntar algo!
+                </div>
+                {% else %}
+                    {% for pregunta in alojamiento.preguntas.all %}
+                    <div class="col-md-12 mb-3">
+                        <div class="card p-2">
+                            <br class="row card-body">
+                                <p><em>
+                                    <strong>({{pregunta.estudiante.user.first_name}}): </strong> {{ pregunta.texto }}
+                                    </em>
+                                </p>
+                                <small class="text-muted">      {{ pregunta.fecha }}</small>
+                            
+                                {% if pregunta.respuestas.exists %}
+                                {% for respuesta in pregunta.respuestas.all %}
+                                <div class="mt-3">
+                                    <p><em><strong>Respuesta: </strong> {{respuesta.texto}}</em></p>
+                                    <small class="text-muted">{{respuesta.fecha}}</small>
+                                </div>
+                                {% endfor %}
+                                {% endif %}
+
+                                {% if request.user.id == alojamiento.propietario.user.id %}
+                                <div class="col-md-12 mt-3">
+                                    <form id="inlineForm" class="form-inline">
+                                        {% csrf_token %}
+                                        <div class="form-group mb-2 flex-grow-1">
+                                            <label for="inlineAnswer" class="sr-only">Respuesta</label>
+                                            <input type="text" class="form-control w-100" id="inlineAnswer" name="answer_text" placeholder="Responde la pregunta de {{ pregunta.estudiante.user.first_name }}">
+                                            <input type="hidden" name="pregunta_id" value="{{ pregunta.id }}">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary mb-2 ml-2">Publicar</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+     <!-- Formulario de preguntas-->
+     {% if request.user.is_authenticated %}
+     {% if request.user|has_estudiante %}
+     <div class="row mt-4">
+        <div class="col-md-12">
+            <h3 class="mb-4">Escribe una pregunta para el propietario</h3>
+            <form id="questionForm" role="form">
+                <div class="form-group">
+                    <label for="question">Pregunta</label>
+                    <textarea class="form-control" id="question" rows="3" placeholder="Escribe tu pregunta aquí"></textarea>
+                </div> 
+                <button type="submit" class="btn btn-primary">Publicar</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+</div>
+
+<!-- fin seccion de preguntas -->
+
+
+<!-- En tu template donde está el formulario -->
+<script>
+    document.getElementById('resenaForm').addEventListener('submit', function(event) {
+        event.preventDefault();  // Prevenir el envío por defecto del formulario
+
+        // Obtener el valor del campo oculto reserva_id
+        var reservaId = document.getElementById('reserva_id').value;
+
+        // Obtener los valores del formulario
+        var formData = new FormData();
+        formData.append('review', document.getElementById('review').value);
+        formData.append('rating', document.getElementById('rating').value);
+        formData.append('reserva_id', reservaId);  // Agregar el ID de la reserva al FormData
+
+        // Enviar la solicitud POST usando fetch
+        fetch('{% url "procesar_resena" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('¡Reseña enviada con éxito!');
+                location.reload();  // Recargar la página después de enviar la reseña
+            } else {
+                alert('Error al enviar la reseña.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al enviar la reseña.');
+        });
+    });
+</script>
+
+
+
+
+
+<script>
+     // AJAX form submission
+     document.getElementById('inlineForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        var formData = new FormData(this);
+
+        fetch('{% url "answer_question" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('¡Respuesta enviada con éxito!');
+                location.reload(); 
+            } else {
+                alert('Error al enviar la respuesta.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al enviar la respuesta.');
+        });
+    });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('questionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        var question = document.getElementById('question').value;
+        var alojamientoId = {{ alojamiento.id }}; // Assuming you have alojamiento.id available in the template
+
+        fetch('{% url "submit_question" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+            },
+            body: new URLSearchParams({
+                'question': question,
+                'alojamiento_id': alojamientoId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Pregunta enviada con éxito!');
+                location.reload(); // Reload the page to show the new question
+            } else {
+                alert('Error al enviar la pregunta. Inténtalo de nuevo.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al enviar la pregunta. Inténtalo de nuevo.');
+        });
+    });
+});
+</script>
 
 
 

@@ -48,3 +48,12 @@
   .notifications {
       margin-top: 20px;
   }
+
+  .tarjeta-solicitud{
+    max-height: 500px;
+  }
+
+  .descripcion-solicitud{
+    max-height: 100px;
+    overflow: hidden;
+  }

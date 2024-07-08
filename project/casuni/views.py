@@ -4,13 +4,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from .forms import LoginForm, SolicitudAlojamiento  # Ensure you have imported your updated LoginForm
 from django.contrib.auth.decorators import login_required
-from .models import Alojamiento, Estudiante, Propietario, Solicitud, Reserva
+from .models import Alojamiento, Estudiante, Propietario, Solicitud, Reserva, Pregunta, Respuesta, Reseña
 from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from .vistas.notificaciones import send_notification
 from django.http import Http404, JsonResponse
-
+from django.views.decorators.csrf import csrf_exempt
 
 def home(request):
     usuario = request.user
@@ -54,6 +54,14 @@ def perfil(request):
         propietario = user.propietario.first()
         alojamientos = Alojamiento.objects.filter(propietario=propietario.id)
         return render(request, 'propietario_perfil.html', {'propietario': propietario, 'alojamientos': alojamientos})
+
+
+@login_required
+def vista_propietario_perfil(request, propietario_id):
+        propietario = get_object_or_404(Propietario, pk=propietario_id)
+        return render(request, 'vista_perfil_propietario.html', {'propietario': propietario})
+
+
 
 @login_required
 def notifications(request):
@@ -138,7 +146,7 @@ def alojamiento_detalle(request, alojamiento_id):
         'form': form,
         'solicitud_url': solicitud_url,
     }
-
+    
     return render(request, 'alojamiento_detalle.html', context)
 
 
@@ -197,6 +205,8 @@ def propietario_perfil(request, propietario_id):
     alojamientos = Alojamiento.objects.filter(propietario=propietario)
     return render(request, 'propietario_perfil.html', {'propietario': propietario, 'alojamientos': alojamientos})
 
+
+
 @login_required
 def crear_reserva(request, solicitud_id):
     solicitud = get_object_or_404(Solicitud, id=solicitud_id)
@@ -231,3 +241,62 @@ def crear_reserva(request, solicitud_id):
     send_notification(reserva.estudiante.user, f"La reserva para {solicitud.alojamiento.nombre} ha sido exitosa", "reserva")
     send_notification(reserva.alojamiento.propietario.user, f"La reserva para {solicitud.alojamiento.nombre} ha sido exitosa", "reserva")
     return redirect('estudiante_perfil', estudiante_id=solicitud.estudiante.id) 
+
+
+@login_required
+@csrf_exempt
+def enviar_pregunta(request):
+    if request.method == 'POST':
+        question_text = request.POST.get('question')
+        alojamiento_id = request.POST.get('alojamiento_id')
+
+        estudiante = Estudiante.objects.get(user=request.user)
+        alojamiento = get_object_or_404(Alojamiento, id=alojamiento_id)
+
+        Pregunta.objects.create(texto=question_text, alojamiento=alojamiento, estudiante = estudiante )
+        send_notification(alojamiento.propietario.user, f"Nueva pregunta en {alojamiento.nombre}", "pregunta")
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=400)
+
+@login_required
+@csrf_exempt
+def answer_question(request):
+    if request.method == 'POST':
+        pregunta_id = request.POST.get('pregunta_id')
+        answer_text = request.POST.get('answer_text')
+
+        pregunta = get_object_or_404(Pregunta, id=pregunta_id)
+        respuesta = Respuesta.objects.create(pregunta=pregunta, texto=answer_text)
+
+        # Optionally, notify about the answer
+        send_notification(pregunta.estudiante.user, f"Respuesta a tu pregunta en {pregunta.alojamiento.nombre}", "respuesta")
+
+        return JsonResponse({'status': 'success'})
+    
+    return JsonResponse({'status': 'error'}, status=400)
+
+
+@login_required
+@csrf_exempt
+def procesar_resena(request):
+    if request.method == 'POST':
+        review_text = request.POST.get('review')
+        rating = request.POST.get('rating')
+        reserva_id = request.POST.get('reserva_id')
+
+        # Obtén el objeto Reserva usando el ID
+        reserva = Reserva.objects.get(id=reserva_id)
+
+        # Crea la reseña asociada a la reserva
+        resena = Reseña.objects.create(
+            texto=review_text,
+            calificacion=rating,
+            reserva=reserva,  # Asigna la reserva al objeto de reseña
+        )
+
+        send_notification(reserva.alojamiento.propietario.user, f"Nueva reseña en tu alojamiento {reserva.alojamiento.nombre}", "reseña")
+        return JsonResponse({'status': 'success'})
+    
+    return JsonResponse({'status': 'error'}, status=400)

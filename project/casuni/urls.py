@@ -14,4 +14,9 @@ urlpatterns = [
     path('solicitud/<int:id>/aceptar/', views.aceptar_solicitud, name='aceptar_solicitud'),
     path('solicitud/<int:id>/rechazar/', views.rechazar_solicitud, name='rechazar_solicitud'),
     path('solicitud/<int:solicitud_id>/crear_reserva/', views.crear_reserva, name='crear_reserva'),
+    path('submit-question/', views.enviar_pregunta, name='submit_question'),
+    path('answer_question/', views.answer_question, name='answer_question'),
+    path('procesar_resena/', views.procesar_resena, name='procesar_resena'),
+    path('vista_propietario/perfil/<int:propietario_id>/', views.vista_propietario_perfil, name='vista_propietario'),
+
 ]

@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% load static %}
+{% load custom_tags %}
+
 
 {% block head %}
 <!-- Link template https://bootstrapbrain.com/component/bootstrap-free-profile-template/#code -->
@@ -74,7 +76,7 @@
           <div class="col-12 card widget-card border-light shadow-sm mt-5 pb-5">
             <h3 class="mb-1 display-6 text-left text-dark">Mis propiedades</h3>
             <div class="row ng-scope mt-5">
-                <div class="col-md-9 col-md-pull-3">
+                <div class="col-md-12 col-md-pull-3">
                     {% for alojamiento in alojamientos %}
                     <div class="container-fluid card-alojamiento">
                         <div class="row">
@@ -108,7 +110,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p class="text-left">
-                                            Calificacion  ⭐ (X Reviews)
+                                          Calificación: ⭐ {% average_calificacion alojamiento %} ( {% count_reseñas alojamiento %} Reseñas)
                                         </p>
                                     </div>
                                     <div class="col-md-6">

@@ -69,7 +69,7 @@
                               <p>No tiene solicitudes pendientes </p>
                           {% else %}
                               {% for solicitud in estudiante.solicitudes.all %}
-                                  <div class="row mb-4">
+                                  <div class="row mb-4 tarjeta-solicitud">
                                     <div class="col-md-12">
                                         <a href="{% url 'solicitud' solicitud.id %}" class="card-link">
                                             <div class="card rounded shadow-sm border-light mt-5 pb-5">
@@ -84,7 +84,7 @@
                                                     <div class="col-md-8">
                                                         <div class="card-body">
                                                             <h5 class="card-title font-weight-bold">{{ solicitud.alojamiento.nombre }}</h5>
-                                                            <p class="card-text"><strong>{{ solicitud.alojamiento.descripcion }}</strong></p>
+                                                            <p class="card-text descripcion-solicitud"><strong>{{ solicitud.alojamiento.descripcion }}</strong></p>
                                                             <p class="card-text"><strong>Mensaje:</strong> {{ solicitud.mensaje }}</p>
                                                             <p class="card-text"><strong>Fechas de ocupación:</strong> {{ solicitud.fechaInicio }} - {{ solicitud.fechaFin }}</p>
                                                             <p class="card-text"><strong>Solicitud realizada:</strong> {{ solicitud.fecha }}</p>
@@ -152,7 +152,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <p class="text-left">
-                                            Calificacion  ⭐ (X Reviews)
+                                          Calificación: ⭐ {% average_calificacion reserva.alojamiento %} ( {% count_reseñas reserva.alojamiento %} Reseñas)
                                         </p>
                                     </div>
                                     <div class="col-md-6">
